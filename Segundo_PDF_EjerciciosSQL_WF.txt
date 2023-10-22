@@ -1,0 +1,40 @@
+-- Ejercicios SQL Bootcamp Data Engineer - EDVAI
+
+-- AVG
+/* 1. Obtener el promedio de precios por cada categoría de producto. La cláusula
+OVER(PARTITION BY CategoryID) específica que se debe calcular el promedio de
+precios por cada valor único de CategoryID en la tabla. */
+
+select c.category_name, p.product_name, p.unit_price,
+avg(p.unit_price) over (partition by c.category_id) 
+from products p
+inner join categories c
+on c.category_id = p.category_id 
+
+
+/* 2. Obtener el promedio de venta de cada cliente */
+
+select avg(od.unit_price*od.quantity) over (partition by c.customer_id) as promedio,
+o.order_id, c.customer_id, o.employee_id, o.order_date, o.required_date, o.shipped_date
+from customers c
+inner join orders o
+on o.customer_id = c.customer_id
+inner join order_details od
+on od.order_id = o.order_id
+
+
+/* 3. Obtener el promedio de cantidad de productos vendidos por categoría (product_name,
+quantity_per_unit, unit_price, quantity, avgquantity) y ordenarlo por nombre de la
+categoría y nombre del producto */
+
+select p.product_name, c.category_name, p.quantity_per_unit, od.unit_price, od.quantity,
+avg(od.quantity) over (partition by c.category_name) as avgquantity
+from products p
+inner join categories c
+on c.category_id = p.category_id 
+inner join order_details od
+on od.product_id = p.product_id 
+order by c.category_name, p.product_name 
+ 
+
+-- MIN
